@@ -4,7 +4,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { usePreferences, type Controls } from "@/hooks/use-preferences";
 import { supabase } from "@/integrations/supabase/client";
 import { useServerFn } from "@tanstack/react-start";
-import { transformContent, generateTTSScript, generateQuiz, explainDifferently, extractTextFromImage } from "@/server/ai.functions";
+import { transformContent, generateTTSScript, generateQuiz, explainDifferently, extractTextFromImage } from "@/lib/ai.functions";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
