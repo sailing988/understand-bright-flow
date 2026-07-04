@@ -157,20 +157,79 @@ function Workspace() {
     }
   };
 
-  const handleImageUpload = async (file: File) => {
-    if (file.size > 5_000_000) return toast.error("Image too large (max 5MB).");
-    const reader = new FileReader();
-    reader.onload = async () => {
-      try {
+  const appendText = (chunk: string) => setText((t) => (t ? t + "\n\n" : "") + chunk);
+
+  const readAsDataURL = (file: File) => new Promise<string>((res, rej) => {
+    const r = new FileReader();
+    r.onload = () => res(r.result as string);
+    r.onerror = () => rej(r.error);
+    r.readAsDataURL(file);
+  });
+
+  const readAsText = (file: File) => new Promise<string>((res, rej) => {
+    const r = new FileReader();
+    r.onload = () => res(r.result as string);
+    r.onerror = () => rej(r.error);
+    r.readAsText(file);
+  });
+
+  const extractPdf = async (file: File): Promise<string> => {
+    const pdfjs: any = await import("pdfjs-dist");
+    // @ts-ignore
+    const workerSrc = (await import("pdfjs-dist/build/pdf.worker.min.mjs?url")).default;
+    pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;
+    const buf = await file.arrayBuffer();
+    const pdf = await pdfjs.getDocument({ data: buf }).promise;
+    let out = "";
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      out += content.items.map((it: any) => it.str).join(" ") + "\n\n";
+    }
+    return out.trim();
+  };
+
+  const extractDocx = async (file: File): Promise<string> => {
+    const mammoth = await import("mammoth/mammoth.browser");
+    const buf = await file.arrayBuffer();
+    const { value } = await (mammoth as any).extractRawText({ arrayBuffer: buf });
+    return value;
+  };
+
+  const handleFileUpload = async (file: File) => {
+    if (file.size > 20_000_000) return toast.error("File too large (max 20MB).");
+    const name = file.name.toLowerCase();
+    const type = file.type;
+    try {
+      if (type.startsWith("image/")) {
         toast.info("Reading image...");
-        const res = await ocrFn({ data: { imageDataUrl: reader.result as string } });
-        setText((t) => (t ? t + "\n\n" : "") + ((res as any).text || ""));
+        const dataUrl = await readAsDataURL(file);
+        const res = await ocrFn({ data: { imageDataUrl: dataUrl } });
+        appendText((res as any).text || "");
         toast.success("Text extracted from image.");
-      } catch (e: any) {
-        toast.error(e.message || "OCR failed");
+      } else if (type === "application/pdf" || name.endsWith(".pdf")) {
+        toast.info("Reading PDF...");
+        const txt = await extractPdf(file);
+        if (!txt) throw new Error("No selectable text — try uploading as image for OCR.");
+        appendText(txt);
+        toast.success("PDF text extracted.");
+      } else if (name.endsWith(".docx") || type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
+        toast.info("Reading Word document...");
+        const txt = await extractDocx(file);
+        appendText(txt);
+        toast.success("Document text extracted.");
+      } else if (name.endsWith(".doc")) {
+        throw new Error("Legacy .doc not supported — please save as .docx or PDF.");
+      } else if (type.startsWith("text/") || name.match(/\.(txt|md|csv|rtf)$/)) {
+        const txt = await readAsText(file);
+        appendText(txt);
+        toast.success("File loaded.");
+      } else {
+        throw new Error("Unsupported file type. Use TXT, MD, PDF, DOCX, or an image.");
       }
-    };
-    reader.readAsDataURL(file);
+    } catch (e: any) {
+      toast.error(e.message || "Failed to read file");
+    }
   };
 
   if (!loaded || authLoading) return <div className="p-12 text-center text-muted-foreground">Loading…</div>;
@@ -201,12 +260,12 @@ function Workspace() {
                 <input
                   ref={fileRef}
                   type="file"
-                  accept="image/*"
+                  accept="image/*,application/pdf,.pdf,.docx,.txt,.md,.csv,.rtf,text/*"
                   className="hidden"
-                  onChange={(e) => e.target.files?.[0] && handleImageUpload(e.target.files[0])}
+                  onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0])}
                 />
                 <Button variant="outline" onClick={() => fileRef.current?.click()}>
-                  <ImageIcon className="mr-2 h-4 w-4" /> Upload image (OCR)
+                  <ImageIcon className="mr-2 h-4 w-4" /> Upload file (image, PDF, DOCX, TXT)
                 </Button>
                 <span className="ml-auto text-xs text-muted-foreground">{text.length} chars</span>
               </div>
