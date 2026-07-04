@@ -252,22 +252,42 @@ function Workspace() {
                 placeholder="Paste a paragraph, lecture notes, a textbook section…"
                 className="mt-2 min-h-40"
               />
-              <div className="mt-3 flex flex-wrap items-center gap-2">
-                <Button onClick={handleTransform} disabled={loading}>
-                  {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
-                  Transform
-                </Button>
-                <input
-                  ref={fileRef}
-                  type="file"
-                  accept="image/*,application/pdf,.pdf,.docx,.txt,.md,.csv,.rtf,text/*"
-                  className="hidden"
-                  onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0])}
-                />
-                <Button variant="outline" onClick={() => fileRef.current?.click()}>
-                  <ImageIcon className="mr-2 h-4 w-4" /> Upload file (image, PDF, DOCX, TXT)
-                </Button>
-                <span className="ml-auto text-xs text-muted-foreground">{text.length} chars</span>
+              <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  <Button onClick={handleTransform} disabled={loading}>
+                    {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
+                    Transform
+                  </Button>
+                  <input
+                    ref={fileRef}
+                    type="file"
+                    accept="image/*,application/pdf,.pdf,.docx,.txt,.md,.csv,.rtf,text/*"
+                    className="hidden"
+                    onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0])}
+                  />
+                  <Button variant="outline" onClick={() => fileRef.current?.click()}>
+                    <ImageIcon className="mr-2 h-4 w-4" /> Upload file (image, PDF, DOCX, TXT)
+                  </Button>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">{text.length} chars</span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setText("");
+                      setOutputs(null);
+                      setSegments([]);
+                      setQuiz(null);
+                      setQuizSubmitted(false);
+                      setReexplain(null);
+                      setSessionId(null);
+                    }}
+                    disabled={!text && !outputs}
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" /> Clean content
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>
