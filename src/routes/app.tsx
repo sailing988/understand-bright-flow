@@ -260,12 +260,12 @@ function Workspace() {
                 <input
                   ref={fileRef}
                   type="file"
-                  accept="image/*"
+                  accept="image/*,application/pdf,.pdf,.docx,.txt,.md,.csv,.rtf,text/*"
                   className="hidden"
-                  onChange={(e) => e.target.files?.[0] && handleImageUpload(e.target.files[0])}
+                  onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0])}
                 />
                 <Button variant="outline" onClick={() => fileRef.current?.click()}>
-                  <ImageIcon className="mr-2 h-4 w-4" /> Upload image (OCR)
+                  <ImageIcon className="mr-2 h-4 w-4" /> Upload file (image, PDF, DOCX, TXT)
                 </Button>
                 <span className="ml-auto text-xs text-muted-foreground">{text.length} chars</span>
               </div>
