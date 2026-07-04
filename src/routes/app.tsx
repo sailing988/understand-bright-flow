@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label";
 import { MermaidView } from "@/components/MermaidView";
 import { useTTSPlayer } from "@/hooks/use-tts";
 import { toast } from "sonner";
-import { Loader2, Headphones, Wand2, ImageIcon, Save, RefreshCw, ChevronRight } from "lucide-react";
+import { Loader2, Headphones, Wand2, ImageIcon, Save, RefreshCw, ChevronRight, Trash2 } from "lucide-react";
 
 export const Route = createFileRoute("/app")({ component: Workspace });
 
