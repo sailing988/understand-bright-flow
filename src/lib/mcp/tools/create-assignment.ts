@@ -20,7 +20,7 @@ export default defineTool({
   annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   handler: async ({ title, due_at }, ctx) => {
     if (!ctx.isAuthenticated()) return { content: [{ type: "text", text: "Not authenticated" }], isError: true };
-    const { data, error } = await sb(ctx.getToken())
+    const { data, error } = await sb(ctx.getToken()!)
       .from("assignments")
       .insert({ user_id: ctx.getUserId(), title, due_at: due_at ?? null })
       .select()

@@ -19,7 +19,7 @@ export default defineTool({
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
   handler: async ({ limit }, ctx) => {
     if (!ctx.isAuthenticated()) return { content: [{ type: "text", text: "Not authenticated" }], isError: true };
-    const { data, error } = await sb(ctx.getToken())
+    const { data, error } = await sb(ctx.getToken()!)
       .from("assignments")
       .select("id, title, due_at, completed, created_at")
       .order("due_at", { ascending: true, nullsFirst: false })
