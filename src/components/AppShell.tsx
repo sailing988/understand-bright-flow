@@ -23,7 +23,8 @@ export function AppShell() {
                 <Link to="/app" className="rounded-md px-3 py-1.5 hover:bg-muted" activeProps={{ className: "rounded-md px-3 py-1.5 bg-muted font-medium" }}>Workspace</Link>
                 <Link to="/planner" className="rounded-md px-3 py-1.5 hover:bg-muted" activeProps={{ className: "rounded-md px-3 py-1.5 bg-muted font-medium" }}>Planner</Link>
                 <Link to="/library" className="rounded-md px-3 py-1.5 hover:bg-muted" activeProps={{ className: "rounded-md px-3 py-1.5 bg-muted font-medium" }}>Library</Link>
-                <Link to="/preferences" className="rounded-md px-3 py-1.5 hover:bg-muted" activeProps={{ className: "rounded-md px-3 py-1.5 bg-muted font-medium" }}>Preferences</Link>
+                <Link to="/study-strategy" className="rounded-md px-3 py-1.5 hover:bg-muted" activeProps={{ className: "rounded-md px-3 py-1.5 bg-muted font-medium" }}>Strategy</Link>
+                <Link to="/onboarding" className="rounded-md px-3 py-1.5 hover:bg-muted" activeProps={{ className: "rounded-md px-3 py-1.5 bg-muted font-medium" }}>Profile</Link>
               </>
             )}
             {!loading && !user && (
