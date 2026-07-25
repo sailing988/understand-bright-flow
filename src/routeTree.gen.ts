@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as StudyStrategyRouteImport } from './routes/study-strategy'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as PreferencesRouteImport } from './routes/preferences'
 import { Route as PlannerRouteImport } from './routes/planner'
@@ -23,6 +24,11 @@ import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 
+const StudyStrategyRoute = StudyStrategyRouteImport.update({
+  id: '/study-strategy',
+  path: '/study-strategy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
@@ -102,6 +108,7 @@ export interface FileRoutesByFullPath {
   '/planner': typeof PlannerRoute
   '/preferences': typeof PreferencesRoute
   '/signup': typeof SignupRoute
+  '/study-strategy': typeof StudyStrategyRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -117,6 +124,7 @@ export interface FileRoutesByTo {
   '/planner': typeof PlannerRoute
   '/preferences': typeof PreferencesRoute
   '/signup': typeof SignupRoute
+  '/study-strategy': typeof StudyStrategyRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -133,6 +141,7 @@ export interface FileRoutesById {
   '/planner': typeof PlannerRoute
   '/preferences': typeof PreferencesRoute
   '/signup': typeof SignupRoute
+  '/study-strategy': typeof StudyStrategyRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -150,6 +159,7 @@ export interface FileRouteTypes {
     | '/planner'
     | '/preferences'
     | '/signup'
+    | '/study-strategy'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/.lovable/oauth/consent'
@@ -165,6 +175,7 @@ export interface FileRouteTypes {
     | '/planner'
     | '/preferences'
     | '/signup'
+    | '/study-strategy'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/.lovable/oauth/consent'
@@ -180,6 +191,7 @@ export interface FileRouteTypes {
     | '/planner'
     | '/preferences'
     | '/signup'
+    | '/study-strategy'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/.lovable/oauth/consent'
@@ -196,6 +208,7 @@ export interface RootRouteChildren {
   PlannerRoute: typeof PlannerRoute
   PreferencesRoute: typeof PreferencesRoute
   SignupRoute: typeof SignupRoute
+  StudyStrategyRoute: typeof StudyStrategyRoute
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
@@ -204,6 +217,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/study-strategy': {
+      id: '/study-strategy'
+      path: '/study-strategy'
+      fullPath: '/study-strategy'
+      preLoaderRoute: typeof StudyStrategyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/signup': {
       id: '/signup'
       path: '/signup'
@@ -308,6 +328,7 @@ const rootRouteChildren: RootRouteChildren = {
   PlannerRoute: PlannerRoute,
   PreferencesRoute: PreferencesRoute,
   SignupRoute: SignupRoute,
+  StudyStrategyRoute: StudyStrategyRoute,
   Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
