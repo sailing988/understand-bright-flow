@@ -8,13 +8,24 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/login")({ component: Login });
+export const Route = createFileRoute("/login")({
+  validateSearch: (s: Record<string, unknown>) => ({
+    next: typeof s.next === "string" && s.next.startsWith("/") && !s.next.startsWith("//") ? s.next : "",
+  }),
+  component: Login,
+});
 
 function Login() {
   const nav = useNavigate();
+  const { next } = Route.useSearch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const goNext = () => {
+    if (next) window.location.href = next;
+    else nav({ to: "/app" });
+  };
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,7 +34,7 @@ function Login() {
     setLoading(false);
     if (error) return toast.error(error.message);
     toast.success("Welcome back!");
-    nav({ to: "/app" });
+    goNext();
   };
 
   return (
@@ -45,7 +56,8 @@ function Login() {
             variant="outline"
             className="w-full"
             onClick={async () => {
-              const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: `${window.location.origin}/app` });
+              const redirect = next ? `${window.location.origin}${next}` : `${window.location.origin}/app`;
+              const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: redirect });
               if (result.error) toast.error(result.error.message || "Google sign-in failed");
             }}
           >
