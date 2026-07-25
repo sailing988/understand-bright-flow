@@ -283,3 +283,53 @@ export const extractTextFromImage = createServerFn({ method: "POST" })
     const j = await res.json();
     return { text: j.choices?.[0]?.message?.content || "" };
   });
+
+const StrategyInput = z.object({
+  profiles: z.array(z.string()).min(1).max(20),
+});
+
+export const generateStudyStrategy = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => StrategyInput.parse(d))
+  .handler(async ({ data }) => {
+    const system = `You are an expert learning coach for neurodivergent students. Given a set of learning profiles the student self-identifies with, produce ONE COHESIVE, integrated study strategy that blends all selected profiles together — never treat them independently. Be warm, concrete, and evidence-based. Reference specific profile combinations when relevant.`;
+    const tool = {
+      type: "function",
+      function: {
+        name: "deliver_strategy",
+        description: "Deliver a personalized combined study strategy.",
+        parameters: {
+          type: "object",
+          properties: {
+            headline: { type: "string", description: "One-sentence personalized headline for this learner." },
+            overview: { type: "string", description: "2-3 short paragraphs explaining how these profiles combine and why the plan is shaped this way." },
+            why_it_matters: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  profile: { type: "string" },
+                  explanation: { type: "string", description: "Why this profile matters, 2-3 sentences." },
+                },
+                required: ["profile", "explanation"],
+              },
+            },
+            study_tips: { type: "array", items: { type: "string" }, description: "5-8 evidence-based tips tailored to the COMBINATION." },
+            techniques: { type: "array", items: { type: "string" }, description: "Recommended study techniques (e.g., Pomodoro, spaced repetition, dual-coding), each with a one-line why." },
+            ai_features: { type: "array", items: { type: "string" }, description: "Which NeuroLearn features to lean on: Audio narration, Step-by-step breakdown, Mermaid diagrams, Summary, Quiz, Assignment planner, Re-explain differently, Library." },
+            sample_routine: { type: "string", description: "A concrete sample daily/weekly routine with times." },
+            productivity: { type: "array", items: { type: "string" } },
+            break_schedule: { type: "string", description: "Recommended break cadence and what to do during breaks." },
+            memory_recall: { type: "array", items: { type: "string" } },
+            motivation: { type: "array", items: { type: "string" } },
+            common_mistakes: { type: "array", items: { type: "string" } },
+          },
+          required: ["headline", "overview", "why_it_matters", "study_tips", "techniques", "ai_features", "sample_routine", "productivity", "break_schedule", "memory_recall", "motivation", "common_mistakes"],
+        },
+      },
+    };
+    const user = `The student selected these learning profiles:\n- ${data.profiles.join("\n- ")}\n\nCreate one integrated study strategy that reflects the FULL combination.`;
+    const j = await callAI({ system, user, tools: [tool], toolChoice: { type: "function", function: { name: "deliver_strategy" } } });
+    const call = j.choices?.[0]?.message?.tool_calls?.[0];
+    if (!call) throw new Error("No strategy returned");
+    return JSON.parse(call.function.arguments);
+  });
