@@ -9,6 +9,16 @@ import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/login")({
+  head: () => ({
+    meta: [
+      { title: "Sign in | NeuroLearn" },
+      { name: "description", content: "Sign in to your personalized NeuroLearn workspace." },
+      { property: "og:title", content: "Sign in | NeuroLearn" },
+      { property: "og:description", content: "Sign in to your personalized NeuroLearn workspace." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   validateSearch: (s: Record<string, unknown>) => ({
     next: typeof s.next === "string" && s.next.startsWith("/") && !s.next.startsWith("//") ? s.next : "",
   }),
@@ -51,7 +61,13 @@ function Login() {
           <p className="mt-1 text-sm text-muted-foreground">Welcome back to NeuroLearn.</p>
           <form onSubmit={submit} className="mt-6 space-y-4">
             <div><Label htmlFor="e">Email</Label><Input id="e" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required /></div>
-            <div><Label htmlFor="p">Password</Label><Input id="p" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required /></div>
+            <div>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="p">Password</Label>
+                <Link to="/forgot-password" className="text-sm text-primary hover:underline">Forgot password?</Link>
+              </div>
+              <Input id="p" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+            </div>
             <Button type="submit" className="w-full" disabled={loading}>{loading ? "Signing in..." : "Sign in"}</Button>
           </form>
           <div className="my-4 flex items-center gap-2 text-xs text-muted-foreground">
