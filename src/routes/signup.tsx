@@ -20,16 +20,29 @@ function Signup() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: { data: { display_name: name }, emailRedirectTo: `${window.location.origin}/onboarding` },
     });
     setLoading(false);
     if (error) return toast.error(error.message);
-    toast.success("Account created. Check your email to confirm, or continue.");
+    if (data.user && data.user.identities && data.user.identities.length === 0) {
+      toast.error("An account with this email already exists. Please sign in instead.");
+      return nav({ to: "/login", search: { next: "" } });
+    }
+    if (!data.session) {
+      // Fall back to an explicit sign-in (covers projects requiring confirmation)
+      const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+      if (signInError) {
+        toast.success("Account created. Check your email to confirm, then sign in.");
+        return nav({ to: "/login", search: { next: "" } });
+      }
+    }
+    toast.success("Account created!");
     nav({ to: "/onboarding" });
   };
+
 
   return (
     <div className="mx-auto max-w-md px-4 py-16">

@@ -32,10 +32,16 @@ function Login() {
     setLoading(true);
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
-    if (error) return toast.error(error.message);
+    if (error) {
+      if (error.message.toLowerCase().includes("invalid login credentials")) {
+        return toast.error("Wrong email or password — or this email was never finished signing up. Try creating the account again.");
+      }
+      return toast.error(error.message);
+    }
     toast.success("Welcome back!");
     goNext();
   };
+
 
   return (
     <div className="mx-auto max-w-md px-4 py-16">
