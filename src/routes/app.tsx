@@ -12,6 +12,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { MermaidView } from "@/components/MermaidView";
+import { OutputInspector } from "@/components/OutputInspector";
+import { useInspector } from "@/hooks/use-inspector";
 import { useTTSPlayer } from "@/hooks/use-tts";
 import { toast } from "sonner";
 import { Loader2, Headphones, Wand2, ImageIcon, Save, RefreshCw, ChevronRight, Trash2 } from "lucide-react";
