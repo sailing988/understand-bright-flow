@@ -111,7 +111,7 @@ function Workspace() {
   const handleQuiz = async () => {
     if (!outputs) return;
     try {
-      const res = await quizFn({ data: { text: outputs.summary } });
+      const res = await inspector.track("generateQuiz", () => quizFn({ data: { text: outputs.summary } }));
       const qs = ((res as any).questions as QuizQ[]) || [];
       setQuiz(qs);
       setQuizAnswers(new Array(qs.length).fill(-1));
