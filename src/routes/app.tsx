@@ -285,6 +285,7 @@ function Workspace() {
                       setQuizSubmitted(false);
                       setReexplain(null);
                       setSessionId(null);
+                      inspector.clear();
                     }}
                     disabled={!text && !outputs}
                   >
