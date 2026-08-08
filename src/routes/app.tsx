@@ -74,7 +74,7 @@ function Workspace() {
     setQuizSubmitted(false);
     setReexplain(null);
     try {
-      const res = await transformFn({ data: { text, preferences: prefs } });
+      const res = await inspector.track("transformContent", () => transformFn({ data: { text, preferences: prefs } }));
       setOutputs(res as Outputs);
       logEvent("transform", { length: text.length });
       // Save session
