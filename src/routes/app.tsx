@@ -99,7 +99,7 @@ function Workspace() {
   const regenerateScript = async (sourceText: string) => {
     setScriptLoading(true);
     try {
-      const res = await scriptFn({ data: { text: sourceText, preferences: prefs } });
+      const res = await inspector.track("generateTTSScript", () => scriptFn({ data: { text: sourceText, preferences: prefs } }));
       setSegments(((res as any).segments as string[]) || []);
     } catch (e: any) {
       toast.error(e.message || "Audio script failed");
