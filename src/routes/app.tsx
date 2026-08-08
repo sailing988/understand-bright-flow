@@ -12,6 +12,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { MermaidView } from "@/components/MermaidView";
+import { OutputInspector } from "@/components/OutputInspector";
+import { useInspector } from "@/hooks/use-inspector";
 import { useTTSPlayer } from "@/hooks/use-tts";
 import { toast } from "sonner";
 import { Loader2, Headphones, Wand2, ImageIcon, Save, RefreshCw, ChevronRight, Trash2 } from "lucide-react";
@@ -50,6 +52,7 @@ function Workspace() {
   const [reLoading, setReLoading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
+  const inspector = useInspector();
 
   const tts = useTTSPlayer(segments, { speed: prefs.controls.speed, tone: prefs.controls.tone });
 
@@ -71,7 +74,7 @@ function Workspace() {
     setQuizSubmitted(false);
     setReexplain(null);
     try {
-      const res = await transformFn({ data: { text, preferences: prefs } });
+      const res = await inspector.track("transformContent", () => transformFn({ data: { text, preferences: prefs } }));
       setOutputs(res as Outputs);
       logEvent("transform", { length: text.length });
       // Save session
@@ -96,7 +99,7 @@ function Workspace() {
   const regenerateScript = async (sourceText: string) => {
     setScriptLoading(true);
     try {
-      const res = await scriptFn({ data: { text: sourceText, preferences: prefs } });
+      const res = await inspector.track("generateTTSScript", () => scriptFn({ data: { text: sourceText, preferences: prefs } }));
       setSegments(((res as any).segments as string[]) || []);
     } catch (e: any) {
       toast.error(e.message || "Audio script failed");
@@ -108,7 +111,7 @@ function Workspace() {
   const handleQuiz = async () => {
     if (!outputs) return;
     try {
-      const res = await quizFn({ data: { text: outputs.summary } });
+      const res = await inspector.track("generateQuiz", () => quizFn({ data: { text: outputs.summary } }));
       const qs = ((res as any).questions as QuizQ[]) || [];
       setQuiz(qs);
       setQuizAnswers(new Array(qs.length).fill(-1));
@@ -147,7 +150,7 @@ function Workspace() {
     setReLoading(true);
     setReexplain(null);
     try {
-      const res = await explainFn({ data: { text: src, style, preferences: prefs } });
+      const res = await inspector.track(`explainDifferently (${style})`, () => explainFn({ data: { text: src, style, preferences: prefs } }));
       setReexplain((res as any).explanation as string);
       logEvent("explain_differently", { style });
     } catch (e: any) {
@@ -204,7 +207,7 @@ function Workspace() {
       if (type.startsWith("image/")) {
         toast.info("Reading image...");
         const dataUrl = await readAsDataURL(file);
-        const res = await ocrFn({ data: { imageDataUrl: dataUrl } });
+        const res = await inspector.track("extractTextFromImage", () => ocrFn({ data: { imageDataUrl: dataUrl } }));
         appendText((res as any).text || "");
         toast.success("Text extracted from image.");
       } else if (type === "application/pdf" || name.endsWith(".pdf")) {
@@ -282,6 +285,7 @@ function Workspace() {
                       setQuizSubmitted(false);
                       setReexplain(null);
                       setSessionId(null);
+                      inspector.clear();
                     }}
                     disabled={!text && !outputs}
                   >
@@ -422,6 +426,9 @@ function Workspace() {
               </CardContent>
             </Card>
           )}
+
+          {/* OUTPUT INSPECTOR */}
+          <OutputInspector records={inspector.records} onClear={inspector.clear} />
         </div>
 
         {/* CONTROLS SIDEBAR */}
