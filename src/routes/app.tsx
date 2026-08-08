@@ -150,7 +150,7 @@ function Workspace() {
     setReLoading(true);
     setReexplain(null);
     try {
-      const res = await explainFn({ data: { text: src, style, preferences: prefs } });
+      const res = await inspector.track(`explainDifferently (${style})`, () => explainFn({ data: { text: src, style, preferences: prefs } }));
       setReexplain((res as any).explanation as string);
       logEvent("explain_differently", { style });
     } catch (e: any) {
