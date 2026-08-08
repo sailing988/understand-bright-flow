@@ -207,7 +207,7 @@ function Workspace() {
       if (type.startsWith("image/")) {
         toast.info("Reading image...");
         const dataUrl = await readAsDataURL(file);
-        const res = await ocrFn({ data: { imageDataUrl: dataUrl } });
+        const res = await inspector.track("extractTextFromImage", () => ocrFn({ data: { imageDataUrl: dataUrl } }));
         appendText((res as any).text || "");
         toast.success("Text extracted from image.");
       } else if (type === "application/pdf" || name.endsWith(".pdf")) {
