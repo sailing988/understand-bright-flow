@@ -426,6 +426,9 @@ function Workspace() {
               </CardContent>
             </Card>
           )}
+
+          {/* OUTPUT INSPECTOR */}
+          <OutputInspector records={inspector.records} onClear={inspector.clear} />
         </div>
 
         {/* CONTROLS SIDEBAR */}
