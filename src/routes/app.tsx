@@ -52,6 +52,7 @@ function Workspace() {
   const [reLoading, setReLoading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
+  const inspector = useInspector();
 
   const tts = useTTSPlayer(segments, { speed: prefs.controls.speed, tone: prefs.controls.tone });
 
